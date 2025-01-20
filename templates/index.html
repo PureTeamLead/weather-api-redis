@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Fast Weather API</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body>
+		<div class="wrapper">
+			<div class="weather-container">
+				<div class="weather__input">
+					<form action="/" method="get">
+						<h1 class="font-bold">The Fastest Weather API</h1>
+						<label for="location">Enter location:</label>
+						<input type="text" id="location" />
+						<label for="date">Enter date:</label>
+						<input type="text" id="date" />
+						<button>Gimme Forecast</button>
+					</form>
+				</div>
+				{{ if .Address}}
+				<div class="weather__output">
+					<p>Forecast for {{ .Address }} with timezone {{ .Timezone }}</p>
+					<h1>{{ .CurrentConditions.Temp }}</h1>
+					<h2>{{ .Description }}</h2>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
