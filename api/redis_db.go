@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"time"
 
@@ -36,12 +37,14 @@ func redisInit() *redis.Client {
 
 func CacheResponse(weatherLocation string, resp *Response) error {
 
+	resp.CurrentConditions.Temp = math.Round(celsiusConverter(resp.CurrentConditions.Temp))
+
 	respJSON, err := json.Marshal(*resp)
 	if err != nil {
 		return fmt.Errorf("error marshalling to json for redis db: %w", err)
 	}
 
-	if err = redisClient.Set(ctx, weatherLocation, respJSON, 12*time.Hour).Err(); err != nil {
+	if err = redisClient.Set(ctx, weatherLocation, respJSON, time.Hour).Err(); err != nil {
 		return fmt.Errorf("error caching response: %v", err)
 	}
 

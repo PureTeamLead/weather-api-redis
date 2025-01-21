@@ -8,22 +8,54 @@ import (
 )
 
 func WeatherHandler(w http.ResponseWriter, r *http.Request) {
-	var res *api.Response
 
-	tmpl, err := template.ParseFiles("/templates/index.html")
+	tmpl, err := template.ParseFiles("../templates/index.html")
 	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		http.Error(w, "Error parsing files", http.StatusInternalServerError)
+		return
 	}
 
-	if err = tmpl.Execute(w, *res); err != nil {
-		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+	if err = tmpl.Execute(w, nil); err != nil {
+		http.Error(w, "Error executing template", http.StatusInternalServerError)
+		return
+	}
+}
+
+func ResultsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
 	}
 
-	address := r.URL.Query().Get("location")
-	date := r.URL.Query().Get("date")
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error parsing form: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	res, err = api.GetForecast(address, []string{date, ""})
+	address := r.FormValue("location")
+	date := r.FormValue("date")
+
+	parseObj, err := api.GetForecast(address, []string{date, ""})
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if parseObj.Description == "" {
+		http.Error(w, "Sorry, but 3rd party API cannot fetch info about this location", http.StatusBadRequest)
+		return
+	}
+
+	log.Println(parseObj.CurrentConditions.Temp)
+
+	tmpl, err := template.ParseFiles("../templates/results.html")
+	if err != nil {
+		http.Error(w, "Error parsing files", http.StatusInternalServerError)
+		return
+	}
+
+	if err = tmpl.Execute(w, parseObj); err != nil {
+		http.Error(w, "Error executing template", http.StatusInternalServerError)
+		return
 	}
 }

@@ -1,3 +1,4 @@
+// handle errors on localhost more beautifully
 package main
 
 import (
@@ -8,5 +9,6 @@ import (
 
 func main() {
 	http.HandleFunc("/", pkg.WeatherHandler)
+	http.HandleFunc("/results", pkg.ResultsHandler)
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }

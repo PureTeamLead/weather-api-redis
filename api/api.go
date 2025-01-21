@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -37,16 +38,16 @@ func url(location string, dates []string) (string, error) {
 }
 
 func GetForecast(location string, dates []string) (*Response, error) {
-	var respObj Response
+	var respObj *Response
 	var resp *http.Response
+
+	log.Println(location)
 
 	if ExistsInCache(location) {
 		respObj, err := GetCachedResponse(location)
 		if err != nil {
 			return nil, err
 		}
-
-		fmt.Printf("Temperature in %s (timezone: %s) is %.1f°C. %s\n", respObj.Address, respObj.Timezone, celsiusConverter(respObj.CurrentConditions.Temp), respObj.Description)
 
 		return respObj, nil
 	}
@@ -63,11 +64,11 @@ func GetForecast(location string, dates []string) (*Response, error) {
 	defer resp.Body.Close()
 
 	switch resp.StatusCode {
-	case 400:
+	case http.StatusBadRequest:
 		return nil, fmt.Errorf("invalid location name")
-	case 401:
+	case http.StatusUnauthorized:
 		return nil, fmt.Errorf("invalid API token")
-	case 503:
+	case http.StatusServiceUnavailable:
 		return nil, fmt.Errorf("server is unavailable")
 	}
 
@@ -76,13 +77,11 @@ func GetForecast(location string, dates []string) (*Response, error) {
 		return nil, fmt.Errorf("error decoding API response: %w", err)
 	}
 
-	fmt.Printf("Temperature in %s (timezone: %s) is %.1f°C. %s\n", respObj.Address, respObj.Timezone, celsiusConverter(respObj.CurrentConditions.Temp), respObj.Description)
-
-	if err = CacheResponse(location, &respObj); err != nil {
+	if err = CacheResponse(location, respObj); err != nil {
 		return nil, err
 	}
 
-	return &respObj, nil
+	return respObj, nil
 }
 
 func celsiusConverter(temp float64) float64 {
