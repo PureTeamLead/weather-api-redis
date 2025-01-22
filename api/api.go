@@ -32,7 +32,7 @@ func url(location string, dates []string) (string, error) {
 
 	token := os.Getenv("WEATHER_API_TOKEN")
 
-	url := fmt.Sprintf("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%s/%s/%s?key=%s ", location, dates[0], dates[1], token)
+	url := fmt.Sprintf("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%s/%s/%s?key=%s", location, dates[0], dates[1], token)
 
 	return url, nil
 }
@@ -65,7 +65,7 @@ func GetForecast(location string, dates []string) (*Response, error) {
 
 	switch resp.StatusCode {
 	case http.StatusBadRequest:
-		return nil, fmt.Errorf("invalid location name")
+		return nil, fmt.Errorf("invalid location name or date")
 	case http.StatusUnauthorized:
 		return nil, fmt.Errorf("invalid API token")
 	case http.StatusServiceUnavailable:

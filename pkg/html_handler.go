@@ -41,11 +41,6 @@ func ResultsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if parseObj.Description == "" {
-		http.Error(w, "Sorry, but 3rd party API cannot fetch info about this location", http.StatusBadRequest)
-		return
-	}
-
 	log.Println(parseObj.CurrentConditions.Temp)
 
 	tmpl, err := template.ParseFiles("../templates/results.html")
