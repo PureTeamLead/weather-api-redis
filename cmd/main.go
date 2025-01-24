@@ -1,4 +1,3 @@
-// handle errors on localhost more beautifully
 package main
 
 import (
