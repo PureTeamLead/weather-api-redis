@@ -24,16 +24,16 @@ Sign up or Sign in, -> account -> key
 
 ### 7. Set up file with environment variables
 
-\*Create file .env
-\*Create variable with name: WEATHER_API_TOKEN
-\*Paste your key(API token)
-\*It would look like this:
+*Create file .env
+*Create variable with name: WEATHER_API_TOKEN
+*Paste your key(API token)
+*It would look like this:
 
 ```bash
 WEATHER_API_TOKEN=4352HJ252JDH2JHFJD
 ```
 
-\*Add environment variable for Redis host -> localhost in your example could be
+*Add environment variable for Redis host -> localhost in your example could be
 
 ```bash
 REDIS_HOST=localhost:3000
